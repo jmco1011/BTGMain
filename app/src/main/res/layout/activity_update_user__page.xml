@@ -89,6 +89,7 @@
         android:layout_marginEnd="36dp"
         android:layout_weight="1"
         android:padding="3dp"
+        android:inputType="textPassword"
         android:text="Password"
         android:textAlignment="center"
         android:textColor="@color/white"

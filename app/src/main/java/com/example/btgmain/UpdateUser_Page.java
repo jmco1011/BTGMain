@@ -28,9 +28,9 @@ public class UpdateUser_Page extends AppCompatActivity {
         dbHandler = new DBHandler(UpdateUser_Page.this);
 
         uFname = getIntent().getStringExtra("fname");
-        uLname = getIntent().getStringExtra("txtsLname");
-        uUsername= getIntent().getStringExtra("txtsUsername");
-        uPassword = getIntent().getStringExtra("txtsPassword");
+        uLname = getIntent().getStringExtra("lname");
+        uUsername= getIntent().getStringExtra("username");
+        uPassword = getIntent().getStringExtra("password");
 
         txtuFname.setText(uFname);
         txtuLname.setText(uLname);

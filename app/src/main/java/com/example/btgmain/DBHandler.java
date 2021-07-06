@@ -1,7 +1,6 @@
 package com.example.btgmain;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -88,6 +87,25 @@ public class DBHandler extends SQLiteOpenHelper {
         cursor.close();
         return ModalArrayList;
     }
+    public ArrayList<Modal> getOneData(int getID){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = " + getID, null);
+        ArrayList<Modal> ModalArrayList = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                ModalArrayList.add(new Modal(cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4)));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return ModalArrayList;
+    }
+
+
 
     public boolean checkUser(String username) {
         String[] columns = {ID_COL};
@@ -164,6 +182,24 @@ public class DBHandler extends SQLiteOpenHelper {
         return username;
     }
 
+    public int getID(){
+        int getID = 0;
+        Cursor cursor = this.getReadableDatabase().query(TABLE_NAME,new String[]{ID_COL},
+                null,
+                null,
+                null,
+                null,
+                null);
+        if (cursor.moveToFirst()) {
+            do {
+                getID = cursor.getInt(0);
+            } while (cursor.moveToNext());
+        }
+            cursor.close();
+            return getID;
+        }
+
 
     }
+
 
