@@ -38,9 +38,6 @@
         <activity android:name=".UpdateUser_Page" />
         <activity android:name=".ShowList" />
         <activity android:name=".RegistrationPage" />
-        <activity
-            android:name=".MapPage"
-            android:label="@string/title_activity_map_page" />
         <activity android:name=".AboutUsPage" />
         <activity android:name=".LoginPage" />
         <activity android:name=".MainPage" />
