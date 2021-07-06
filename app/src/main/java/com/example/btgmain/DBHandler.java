@@ -92,15 +92,14 @@ public class DBHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = " + getID, null);
         ArrayList<Modal> ModalArrayList = new ArrayList<>();
 
-        if (cursor.moveToFirst()) {
-            do {
+        cursor.moveToFirst();
+
                 ModalArrayList.add(new Modal(cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
                         cursor.getString(4)));
 
-            } while (cursor.moveToNext());
-        }
+
         cursor.close();
         return ModalArrayList;
     }
@@ -167,17 +166,14 @@ public class DBHandler extends SQLiteOpenHelper {
     public String getUsername() throws SQLException{
         String username = "";
         Cursor cursor = this.getReadableDatabase().query(TABLE_NAME,
-                new String[]{Username_COL},
+                new String[]{Fname_COL},
                 null,
                 null,
                 null,
                 null,
                 null);
-        if (cursor.moveToFirst()){
-            do{
-                username = cursor.getString(0);
-            }while (cursor.moveToNext());
-        }
+        cursor.moveToFirst();
+        username = cursor.getString(0);
         cursor.close();
         return username;
     }
@@ -190,11 +186,8 @@ public class DBHandler extends SQLiteOpenHelper {
                 null,
                 null,
                 null);
-        if (cursor.moveToFirst()) {
-            do {
+        cursor.moveToFirst();
                 getID = cursor.getInt(0);
-            } while (cursor.moveToNext());
-        }
             cursor.close();
             return getID;
         }
