@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
             public  void  run(){
                 try {
                     super.run();
-                    sleep(5000);
+                    sleep(3000);
                 }catch (Exception e){
 
                 }finally {

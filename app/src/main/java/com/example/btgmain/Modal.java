@@ -5,8 +5,11 @@ public class Modal {
     private String Fname;
     private String Lname;
     private String Password;
+    private String Email;
     private  int ID;
 
+    public  String getEmail(){ return Email; }
+    public void setEmail(String Email){ this.Email = Email; }
     public String getUsername(){
         return Username;
     }

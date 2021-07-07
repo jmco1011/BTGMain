@@ -53,6 +53,7 @@
         android:layout_marginTop="4dp"
         android:background="@color/white"
         android:visibility="visible"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -78,6 +79,7 @@
         android:layout_marginTop="4dp"
         android:background="@color/white"
         android:visibility="visible"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />

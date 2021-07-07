@@ -74,15 +74,19 @@ public class LoginPage extends AppCompatActivity {
              }
             CheckFinalResult();
         }else {
-            Toast.makeText(LoginPage.this,"madi ingkabil mo",Toast.LENGTH_LONG).show();
+            Toast.makeText(LoginPage.this,"Invalid Input",Toast.LENGTH_LONG).show();
         }
     }
     public void CheckFinalResult(){
         if(TempPassword.equalsIgnoreCase(PHolder)){
-            Toast.makeText(LoginPage.this,"Success", Toast.LENGTH_LONG).show();
             startActivity(new Intent(LoginPage.this,MainPage.class));
         }else{
-            Toast.makeText(LoginPage.this,"Madi madi",Toast.LENGTH_LONG).show();
+
+            loginpassword.setError("Invalid");
+            loginusername.setError("Invalid");
+            loginusername.setText("");
+            loginpassword.setText("");
+
         }
         TempPassword= "NOT_FOUND";
     }

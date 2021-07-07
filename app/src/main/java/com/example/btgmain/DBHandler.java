@@ -18,6 +18,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String Username_COL = "Username";
     public static final String Fname_COL = "FirstName";
     public static final String Lname_COL = "LastName";
+    public static final String Email_COL = "Email";
     public static final String Password_COL = "Password";
 
     public DBHandler(LoginPage loginPage) {
@@ -48,16 +49,18 @@ public class DBHandler extends SQLiteOpenHelper {
                 + Username_COL + " TEXT,"
                 + Fname_COL + " TEXT, "
                 + Lname_COL + " TEXT, "
+                + Email_COL + " VARCHAR, "
                 + Password_COL + " TEXT)";
         db.execSQL(query);
     }
 
-    public void addUSer(String username, String fname, String lname, String password) {
+    public void addUSer(String username, String fname, String lname, String email, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Username_COL, username);
         values.put(Fname_COL, fname);
         values.put(Lname_COL, lname);
+        values.put(Email_COL,email);
         values.put(Password_COL, password);
         db.insert(TABLE_NAME, null, values);
         db.close();
@@ -69,35 +72,17 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public ArrayList<Modal> readUser() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-
-        ArrayList<Modal> ModalArrayList = new ArrayList<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                ModalArrayList.add(new Modal(cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getString(4)));
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return ModalArrayList;
-    }
     public ArrayList<Modal> getOneData(int getID){
         SQLiteDatabase db = this.getReadableDatabase();
+
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + ID_COL + " = " + getID, null);
         ArrayList<Modal> ModalArrayList = new ArrayList<>();
-
         cursor.moveToFirst();
-
-                ModalArrayList.add(new Modal(cursor.getString(1),
+                ModalArrayList.add(new Modal(
+                        cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
-                        cursor.getString(4)));
+                        cursor.getString(5)));
 
 
         cursor.close();
@@ -172,27 +157,33 @@ public class DBHandler extends SQLiteOpenHelper {
                 null,
                 null,
                 null);
-        cursor.moveToFirst();
-        username = cursor.getString(0);
+        if(cursor.moveToFirst()){
+            do{
+                username = cursor.getString(0);
+
+            }while (cursor.moveToNext());
+        }
         cursor.close();
         return username;
     }
 
-    public int getID(){
+    public int getID() {
         int getID = 0;
-        Cursor cursor = this.getReadableDatabase().query(TABLE_NAME,new String[]{ID_COL},
+
+        Cursor cursor = this.getReadableDatabase().query(TABLE_NAME, new String[]{ID_COL},
                 null,
                 null,
                 null,
                 null,
                 null);
-        cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
+            do {
                 getID = cursor.getInt(0);
-            cursor.close();
-            return getID;
+            } while (cursor.moveToNext());
         }
-
-
+        cursor.close();
+        return getID;
     }
+}
 
 
