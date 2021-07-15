@@ -1,7 +1,6 @@
 package com.example.btgmain;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -13,11 +12,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -65,12 +61,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        PopupWindow pw = new PopupWindow(this);
-        LinearLayout layout = new LinearLayout(this);
 
-    }
+        mapFragment.getMapAsync(this);
+       }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -145,16 +138,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
-                        LatLng MinesView = new LatLng(16.4196,120.6279);
                         mDestination = latLng;
                         mMap.clear();
                         mMarkerOptions = new MarkerOptions().position(mDestination).title("Destination");
                         mMap.addMarker(mMarkerOptions);
                         if(mOrigin != null && mDestination != null)
                             drawRoute();
-                        if (mDestination.equals(MinesView)){
-
-                        }
                     }
 
                 });
