@@ -4,22 +4,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent" android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginTop="16dp"
-        android:text="Source"
-        map:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <EditText
-        android:id="@+id/et_source"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginTop="12dp"
-        map:layout_constraintTop_toBottomOf="@+id/textView17"
-        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/textView18"
@@ -27,7 +11,6 @@
         android:layout_height="20dp"
         android:layout_marginTop="12dp"
         android:text="Destination"
-        map:layout_constraintTop_toBottomOf="@+id/et_source"
         tools:layout_editor_absoluteX="0dp" />
 
     <EditText
@@ -50,7 +33,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="500dp"
         map:layout_constraintTop_toBottomOf="@+id/btnAccept"
         tools:context=".MapsActivity"
         tools:layout_editor_absoluteX="-51dp" />

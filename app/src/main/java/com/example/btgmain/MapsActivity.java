@@ -12,8 +12,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -22,9 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -40,12 +43,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
-    EditText et_source, et_dest;
+    EditText et_dest;
     Button btnAccept;
-
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -53,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
+    LatLng burnhampark = new LatLng(16.4114,120.5940);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +63,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
-       }
+         btnAccept = findViewById(R.id.btnAccept);
+
+
+
+
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMaxZoomPreference(16.0f);
+        mMap.setMinZoomPreference(16.0f);
         getMyLocation();
     }
 
@@ -142,17 +150,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap.clear();
                         mMarkerOptions = new MarkerOptions().position(mDestination).title("Destination");
                         mMap.addMarker(mMarkerOptions);
-                        if(mOrigin != null && mDestination != null)
-                            drawRoute();
-                    }
+                        if(mOrigin != null && mDestination != null) {
+                                drawRoute();
+                            }
+                        }
+
 
                 });
+
+                btnAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        searchLocation();
+
+                     /*   LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View popUp = inflater.inflate(R.layout.popupwindow, null);
+                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                        boolean focusable = true; // lets taps outside the popup also dismiss it
+                        final PopupWindow popupWindow = new PopupWindow(popUp, width, height, focusable);
+                        popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);drawRoute();*/
+                        }
+
+                });
+
 
             }else{
                 requestPermissions(new String[]{
                         android.Manifest.permission.ACCESS_FINE_LOCATION
                 },100);
             }
+        }
+    }
+
+    private void searchLocation() {
+        mMap.clear();
+        et_dest = findViewById(R.id.et_dest);
+        String location = et_dest.getText().toString();
+        List<Address> addressList = null;
+
+        if (location != null || !location.equalsIgnoreCase("")){
+            Geocoder geocoder = new Geocoder(MapsActivity.this);
+            try{
+                addressList = geocoder.getFromLocationName(location,1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList. get(0);
+            LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+            DownloadTask downloadTask = new DownloadTask();
+            downloadTask.execute(getDirectionsUrl(mOrigin,latLng));
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
     }
 
@@ -327,6 +376,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }else
                 Toast.makeText(getApplicationContext(),"No route is found", Toast.LENGTH_LONG).show();
         }
+
     }
     }
 
