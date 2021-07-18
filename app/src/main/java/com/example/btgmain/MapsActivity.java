@@ -12,13 +12,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -45,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
-    EditText et_dest;
+    Spinner et_dest1;
     Button btnAccept;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
@@ -54,7 +53,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
-    LatLng burnhampark = new LatLng(16.4114,120.5940);
+    String[] places =new String[]
+            {"Burnham Park",
+                    "Mines View Park",
+                    "Camp John Hay",
+                    "Wright Park",
+                    "The Mansion",
+                    "Botanical Garden",
+                    "Bell Church"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
          btnAccept = findViewById(R.id.btnAccept);
+        et_dest1 = findViewById(R.id.et_dest);
 
 
 
@@ -185,24 +192,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void searchLocation() {
         mMap.clear();
-        et_dest = findViewById(R.id.et_dest);
-        String location = et_dest.getText().toString();
-        List<Address> addressList = null;
+         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,places);
+         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+         et_dest1.setAdapter(adapter);
+         et_dest1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+             @Override
+             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                 String location = et_dest1.getSelectedItem().toString();
+                 List<Address> addressList = null;
 
-        if (location != null || !location.equalsIgnoreCase("")){
-            Geocoder geocoder = new Geocoder(MapsActivity.this);
-            try{
-                addressList = geocoder.getFromLocationName(location,1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address address = addressList. get(0);
-            LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
-            DownloadTask downloadTask = new DownloadTask();
-            downloadTask.execute(getDirectionsUrl(mOrigin,latLng));
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        }
+                 if (location != null || !location.equalsIgnoreCase("")){
+                     Geocoder geocoder = new Geocoder(MapsActivity.this);
+                     try{
+                         addressList = geocoder.getFromLocationName(location,1);
+                     } catch (IOException e) {
+                         e.printStackTrace();
+                     }
+                     Address address = addressList. get(0);
+                     LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+                     DownloadTask downloadTask = new DownloadTask();
+                     downloadTask.execute(getDirectionsUrl(mOrigin,latLng));
+                     mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+                     mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                 }
+             }
+
+             @Override
+             public void onNothingSelected(AdapterView<?> parent) {
+
+             }
+         });
+
     }
 
 

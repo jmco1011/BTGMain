@@ -11,4 +11,13 @@
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_map_page">Map</string>
     <string name="title_activity_maps">Map</string>
+    <string-array name="places">
+        <item>Burnham Park</item>
+        <item>Mines View Park</item>
+        <item>Camp John Hay</item>
+        <item>Botanical Garden</item>
+        <item>Wright Park</item>
+        <item>The Mansion</item>
+        <item> Bell Church</item>
+    </string-array>
 </resources>

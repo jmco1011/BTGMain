@@ -13,7 +13,8 @@
         android:text="Destination"
         tools:layout_editor_absoluteX="0dp" />
 
-    <EditText
+    <Spinner
+        android:entries="@array/places"
         android:id="@+id/et_dest"
         android:layout_width="match_parent"
         android:layout_height="45dp"
