@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,11 +29,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -220,10 +223,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                      downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
                      mMap.addMarker(new MarkerOptions().position(latLng).title(location));
                      mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                     if (latLng.equals(Burnham)){
-                         Toast.makeText(MapsActivity.this, "Burnham", Toast.LENGTH_SHORT).show();
 
-                     }
+
                  }
              }
 
