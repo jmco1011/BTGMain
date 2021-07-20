@@ -16,8 +16,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
 
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
+    TextView txtSpeed;
     Spinner et_dest1;
     Button btnAccept;
     private GoogleMap mMap;
@@ -53,13 +56,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
+
+    PopupWindow popUp;
+
     String[] places =new String[]
             {"Burnham Park",
                     "Mines View Park",
                     "Camp John Hay",
-                    "Wright Park",
-                    "The Mansion",
-                    "Botanical Garden",
+                    "Baguio Wright Park",
+                    "Baguio The Mansion House",
+                    "Baguio Bamboo Sanctuary",
                     "Bell Church"};
 
     @Override
@@ -71,9 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
          btnAccept = findViewById(R.id.btnAccept);
-        et_dest1 = findViewById(R.id.et_dest);
-
-
+         et_dest1 = findViewById(R.id.et_dest);
+         txtSpeed = findViewById(R.id.txtSpeed);
 
 
     }
@@ -81,8 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMaxZoomPreference(16.0f);
-        mMap.setMinZoomPreference(16.0f);
+        mMap.setMaxZoomPreference(16);
         getMyLocation();
     }
 
@@ -121,9 +125,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onLocationChanged(Location location) {
                 mOrigin = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mOrigin,12));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mOrigin,16));
                 if(mOrigin != null && mDestination != null) {
                     drawRoute();
+                    int speed = (int) ((location.getSpeed()*3600)/1000);
+                   txtSpeed.setText(speed + " km/h");
                 }
             }
 
@@ -191,29 +197,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void searchLocation() {
-        mMap.clear();
-         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,places);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,places);
          adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
          et_dest1.setAdapter(adapter);
          et_dest1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
              @Override
              public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                 mMap.clear();
+                 LatLng Burnham = new LatLng(16.4114, 120.5940);
                  String location = et_dest1.getSelectedItem().toString();
-                 List<Address> addressList = null;
-
-                 if (location != null || !location.equalsIgnoreCase("")){
+                 if (location != null || !location.equalsIgnoreCase("")) {
+                     List<Address> addressList = null;
                      Geocoder geocoder = new Geocoder(MapsActivity.this);
-                     try{
-                         addressList = geocoder.getFromLocationName(location,1);
+                     try {
+                         addressList = geocoder.getFromLocationName(location, 1);
                      } catch (IOException e) {
                          e.printStackTrace();
                      }
-                     Address address = addressList. get(0);
-                     LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+                     Address address = addressList.get(0);
+                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                      DownloadTask downloadTask = new DownloadTask();
-                     downloadTask.execute(getDirectionsUrl(mOrigin,latLng));
+                     downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
                      mMap.addMarker(new MarkerOptions().position(latLng).title(location));
                      mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                     if (latLng.equals(Burnham)){
+                         Toast.makeText(MapsActivity.this, "Burnham", Toast.LENGTH_SHORT).show();
+
+                     }
                  }
              }
 

@@ -11,6 +11,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="12dp"
         android:text="Destination"
+        map:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
     <Spinner
@@ -39,11 +40,20 @@
         tools:context=".MapsActivity"
         tools:layout_editor_absoluteX="-51dp" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginTop="376dp"
-        map:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/txtSpeed"
+        android:layout_width="78dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:hint="km/hr"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+    <!-- <androidx.core.widget.NestedScrollView
+         android:id="@+id/bottom_sheet"
+         android:layout_width="match_parent"
+         android:layout_height="350dp"
+         android:layout_marginTop="376dp"
+         map:layout_constraintTop_toTopOf="parent"
+         tools:layout_editor_absoluteX="16dp" />
+ --></androidx.constraintlayout.widget.ConstraintLayout>
