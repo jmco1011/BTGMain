@@ -24,7 +24,7 @@
         android:layout_marginTop="92dp"
         android:clickable="false"
         android:fontFamily="@font/aclonica"
-        android:text="Baguio Trivia Game"
+        android:text="Baguio Trivial Guide"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textColorHighlight="#FFFFFF"

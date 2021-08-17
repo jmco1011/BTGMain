@@ -49,7 +49,7 @@
     <EditText
         android:id="@+id/txtFName"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="4dp"
         android:background="@color/white"
         android:visibility="visible"
@@ -75,7 +75,7 @@
     <EditText
         android:id="@+id/txtLName"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="4dp"
         android:background="@color/white"
         android:visibility="visible"
@@ -100,7 +100,7 @@
     <EditText
         android:id="@+id/txtPassword"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:inputType="textPassword"
@@ -125,7 +125,7 @@
     <EditText
         android:id="@+id/txtCPassword"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:inputType="textPassword"
@@ -149,7 +149,7 @@
     <EditText
         android:id="@+id/txtEmail"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:inputType="textEmailAddress"
@@ -172,7 +172,7 @@
     <EditText
         android:id="@+id/txtUsername"
         android:layout_width="253dp"
-        android:layout_height="19dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"

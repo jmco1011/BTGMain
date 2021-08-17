@@ -1,16 +1,25 @@
 package com.example.btgmain;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;
 
@@ -18,6 +27,7 @@ public class RegistrationPage extends AppCompatActivity {
     private EditText txtFname, txtLname, txtPassword ,txtUsername,txtCpassword,txtEmail;
     private Button button;
     private DBHandler dbHandler;
+    FirebaseAuth Fauth;
 
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
@@ -44,35 +54,7 @@ public class RegistrationPage extends AppCompatActivity {
         txtEmail = findViewById(R.id.txtEmail);
         button = findViewById(R.id.button);
 
-        txtFname.setFilters(new InputFilter[]{
-                new InputFilter() {
-                    @Override
-                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                        if (source.equals("")) {
-                            return source;
-                        }
-                        if (source.toString().matches("[a-zA-Z]+")){
-                            return source;
-                        }
-                        return "";
-                    }
-                }
-        });
-        txtLname.setFilters(new InputFilter[]{
-                new InputFilter() {
-                    @Override
-                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                        if (source.equals("")) {
-                            return source;
-                        }
-                        if (source.toString().matches("[a-zA-Z]+")){
-                            return source;
-                        }
-                        return "";
-                    }
-                }
-        });
-
+        Fauth = FirebaseAuth.getInstance();
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +67,15 @@ public class RegistrationPage extends AppCompatActivity {
                 String Password = txtPassword.getText().toString();
                 String cPassword = txtCpassword.getText().toString();
 
+                if (TextUtils.isEmpty(Fname)){
+                    txtFname.setError("First Name is Required");
+                    return;
+                }
+                if (TextUtils.isEmpty(Lname)){
+                    txtLname.setError("Last Name is Required");
+                }
+
+
                 try {
                     if (!validEmail() && !validPassword() && !validName() && !validlName()) {
                         return;
@@ -94,16 +85,28 @@ public class RegistrationPage extends AppCompatActivity {
 
                         return;
                     } else {
+                       /* Fauth.createUserWithEmailAndPassword(Email,Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
+                                if (task.isSuccessful()){
+                                    Toast.makeText(RegistrationPage.this, "User Added",Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(RegistrationPage.this,LoginPage.class));
+                                }else{
+                                    Toast.makeText(RegistrationPage.this,"Error : " + task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        });*/
                         dbHandler.addUSer(Username, Fname, Lname, Email, Password);
-                        Toast.makeText(RegistrationPage.this, "User added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegistrationPage.this,"New User Added",Toast.LENGTH_SHORT).show();
                         txtUsername.setText("");
                         txtFname.setText("");
                         txtLname.setText("");
                         txtPassword.setText("");
                         txtEmail.setText("");
                         txtCpassword.setText("");
-                        startActivity(new Intent(RegistrationPage.this, LoginPage.class));
-                    }
+                        startActivity(new Intent(RegistrationPage.this,LoginPage.class));
+                   }
                 } catch (Exception e) {
                    e.printStackTrace();}
             }
