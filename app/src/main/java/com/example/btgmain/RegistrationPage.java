@@ -27,7 +27,7 @@ public class RegistrationPage extends AppCompatActivity {
     private EditText txtFname, txtLname, txtPassword ,txtUsername,txtCpassword,txtEmail;
     private Button button;
     private DBHandler dbHandler;
-    FirebaseAuth Fauth;
+    //FirebaseAuth Fauth;
 
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
@@ -54,7 +54,7 @@ public class RegistrationPage extends AppCompatActivity {
         txtEmail = findViewById(R.id.txtEmail);
         button = findViewById(R.id.button);
 
-        Fauth = FirebaseAuth.getInstance();
+       //Fauth = FirebaseAuth.getInstance();
 
 
         button.setOnClickListener(new View.OnClickListener() {
