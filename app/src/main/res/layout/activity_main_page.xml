@@ -36,15 +36,15 @@
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="84dp"
+        android:layout_marginStart="76dp"
+        android:elevation="10dp"
         android:fontFamily="@font/aclonica"
         android:text="About Us"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272"
-        android:elevation="10dp"/>
+        app:layout_constraintVertical_bias="0.248" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnMap"

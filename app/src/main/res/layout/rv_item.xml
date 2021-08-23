@@ -7,37 +7,25 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:text="First Name"
+        android:layout_marginTop="68dp"
+        android:text="Account"
         android:textColor="@color/white"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="28dp"
-        android:text="Username"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-    <TextView
-        android:id="@+id/txtsFname"
-        android:layout_width="268dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="16dp"
-        android:padding="3dp"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="100dp"
         android:text="First Name"
         android:textColor="@color/white"
-        android:textAlignment="center"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,10 +33,11 @@
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="44dp"
         android:text="Last Name"
         android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
@@ -56,77 +45,103 @@
         android:id="@+id/txtsLname"
         android:layout_width="268dp"
         android:layout_height="28dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginTop="44dp"
         android:layout_weight="1"
         android:padding="3dp"
         android:text="Last Name"
         android:textAlignment="center"
         android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtsFname" />
-
-    <TextView
-        android:id="@+id/textView15"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Password"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView16" />
-
-    <TextView
-        android:id="@+id/txtsPassword"
-        android:layout_width="268dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginEnd="36dp"
-        android:layout_weight="1"
-        android:padding="3dp"
-        android:text="Password"
-        android:inputType="textPassword"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtsLname" />
 
     <TextView
         android:id="@+id/txtsUsername"
         android:layout_width="268dp"
         android:layout_height="28dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginTop="48dp"
         android:width="90dp"
         android:text="Username"
         android:textAlignment="center"
         android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtsLname" />
 
+    <TextView
+        android:id="@+id/txtsPassword"
+        android:layout_width="268dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="112dp"
+        android:layout_weight="1"
+        android:inputType="textPassword"
+        android:padding="3dp"
+        android:text="Password"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtsLname" />
+
+    <TextView
+        android:id="@+id/txtsFname"
+        android:layout_width="268dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="124dp"
+        android:padding="3dp"
+        android:text="First Name"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="Password"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView16" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="48dp"
+        android:text="Username"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnUpdate"
-        android:layout_width="114dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="684dp"
+        android:layout_width="193dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="220dp"
         android:background="@drawable/transpreent_bg_bordered"
         android:fontFamily="@font/aclonica"
         android:text="Edit Account"
         android:textColor="@color/white"
-        android:textSize="10dp"
+        android:textSize="15dp"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.915"
+        app:layout_constraintHorizontal_bias="0.926"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txtsPassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
