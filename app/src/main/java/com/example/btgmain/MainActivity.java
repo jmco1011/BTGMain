@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception e){
 
                 }finally {
-                    Intent i = new Intent(MainActivity.this, LoginPage.class);
+                    Intent i = new Intent(MainActivity.this, MapsActivity.class);
                     startActivity(i);
                     finish();
                 }

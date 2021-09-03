@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <uses-permission android:name="android.permission.CALL_PHONE" />
 
+
       <application
         android:allowBackup="true"
         android:icon="@mipmap/icon_round"
@@ -37,14 +38,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".UpdateUser_Page" />
-        <activity android:name=".ShowList" />
-        <activity android:name=".RegistrationPage" />
-        <activity android:name=".AboutUsPage" />
-        <activity android:name=".LoginPage" />
-        <activity android:name=".MainPage"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
-        <activity android:name=".MainActivity">
+          <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

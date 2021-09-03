@@ -14,32 +14,40 @@
  import android.os.AsyncTask;
  import android.os.Build;
  import android.os.Bundle;
+ import android.text.Html;
  import android.util.Log;
  import android.view.Gravity;
  import android.view.LayoutInflater;
  import android.view.MotionEvent;
  import android.view.View;
+ import android.webkit.JavascriptInterface;
  import android.widget.AdapterView;
  import android.widget.ArrayAdapter;
  import android.widget.Button;
  import android.widget.ImageButton;
  import android.widget.LinearLayout;
  import android.widget.PopupWindow;
+ import android.widget.RadioButton;
+ import android.widget.RadioGroup;
  import android.widget.Spinner;
  import android.widget.TextView;
  import android.widget.Toast;
 
+ import androidx.annotation.NonNull;
  import androidx.fragment.app.FragmentActivity;
 
+ import com.google.android.gms.location.GeofencingApi;
  import com.google.android.gms.maps.CameraUpdateFactory;
  import com.google.android.gms.maps.GoogleMap;
  import com.google.android.gms.maps.OnMapReadyCallback;
  import com.google.android.gms.maps.SupportMapFragment;
  import com.google.android.gms.maps.model.LatLng;
+ import com.google.android.gms.maps.model.Marker;
  import com.google.android.gms.maps.model.MarkerOptions;
  import com.google.android.gms.maps.model.Polyline;
  import com.google.android.gms.maps.model.PolylineOptions;
 
+ import org.jetbrains.annotations.NotNull;
  import org.json.JSONObject;
 
  import java.io.BufferedReader;
@@ -53,10 +61,18 @@
  import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
-    TextView txtSpeed, txtPopUp,txtDuration;
+    TextView txtSpeed, txtPopUp,txtDuration,txtWalkDuration;
     Spinner et_dest1;
-    Button btnAccept;
+    Button btnLink,btnDrive,btnWalk,btnTransit,btnBike;
     ImageButton btnEm;
+    RadioButton rbDriving, rbWalking, rbBicycling;
+    RadioGroup rgModes;
+    int mMode=0;
+    final int MODE_DRIVING=0;
+    final int MODE_TRANSIT=1;
+    final int MODE_WALKING=2;
+
+
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -64,18 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
-
-
-
-    String[] places =new String[]
-            {"Burnham Park",
-                    "Mines View Park",
-                    "Camp John Hay",
-                    "Baguio Wright Park",
-                    "Baguio The Mansion House",
-                    "Baguio Bamboo Sanctuary",
-                    "Bell Church",
-                    "Baguio Our Lady of Lourdes Grotto"};
+    public  String key = "key= AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,29 +89,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-         btnAccept = findViewById(R.id.btnAccept);
-         et_dest1 = findViewById(R.id.et_dest);
+         mapFragment.getMapAsync(this);
+
+
          txtSpeed = findViewById(R.id.txtSpeed);
          txtPopUp = findViewById(R.id.txtPopup);
          txtDuration = findViewById(R.id.txtDuration);
+         btnLink = findViewById(R.id.btnLink);
          btnEm = findViewById(R.id.btnEm);
 
-         btnEm.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                 callIntent.setData(Uri.parse("tel:(6374)4423939"));
-                 startActivity(callIntent);
-             }
-         });
+         rbDriving = findViewById(R.id.rb_driving);
+         rbBicycling = findViewById(R.id.rb_bicycling);
+         rbWalking = findViewById(R.id.rb_walking);
+         rgModes = findViewById(R.id.rg_modes);
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMaxZoomPreference(16);
+        mMap.isMyLocationEnabled();
         getMyLocation();
+
+
+
     }
 
 
@@ -135,22 +141,807 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-    private void getMyLocation(){
+    private void getMyLocation() {
+        //Initialize landmarks
+
+        Location maharlika = new Location(LocationManager.GPS_PROVIDER);
+        maharlika.setLatitude(16.41406);
+        maharlika.setLongitude(120.590507);
+
+        Location burnham = new Location(LocationManager.GPS_PROVIDER);
+        burnham.setLatitude(16.41252);
+        burnham.setLongitude(120.59299);
+
+        Location minesview = new Location(LocationManager.GPS_PROVIDER);
+        minesview.setLatitude(16.419661);
+        minesview.setLongitude(120.62788);
+
+        Location grotto = new Location(LocationManager.GPS_PROVIDER);
+        grotto.setLatitude(16.40961);
+        grotto.setLongitude(120.58056);
+
+        Location mansion = new Location(LocationManager.GPS_PROVIDER);
+        mansion.setLatitude(16.41369);
+        mansion.setLongitude(120.62038);
+
+        Location wright = new Location(LocationManager.GPS_PROVIDER);
+        wright.setLatitude(16.41593);
+        wright.setLongitude(120.61671);
+
+        Location teacherscamp = new Location(LocationManager.GPS_PROVIDER);
+        teacherscamp.setLatitude(16.41193);
+        teacherscamp.setLongitude(120.60641);
+
+        Location kennonroad = new Location(LocationManager.GPS_PROVIDER);
+        kennonroad.setLatitude(16.37516);
+        kennonroad.setLongitude(120.60706);
+
+        Location bellamph = new Location(LocationManager.GPS_PROVIDER);
+        bellamph.setLatitude(16.39880);
+        bellamph.setLongitude(120.61779);
+
+        Location govpack = new Location(LocationManager.GPS_PROVIDER);
+        govpack.setLatitude(16.41099);
+        govpack.setLongitude(120.59902);
+
+        Location campjh = new Location(LocationManager.GPS_PROVIDER);
+        campjh.setLatitude(16.39708);
+        campjh.setLongitude(120.61148);
+
+        Location botanical = new Location(LocationManager.GPS_PROVIDER);
+        botanical.setLatitude(16.41503);
+        botanical.setLongitude(120.61338);
+
+        Location cathedral = new Location(LocationManager.GPS_PROVIDER);
+        cathedral.setLatitude(16.42345);
+        cathedral.setLongitude(120.59346);
+
+        Location bellchurch = new Location(LocationManager.GPS_PROVIDER);
+        bellchurch.setLatitude(16.43158);
+        bellchurch.setLongitude(120.59883);
+
+        Location tamawan = new Location(LocationManager.GPS_PROVIDER);
+        tamawan.setLatitude(16.42949);
+        tamawan.setLongitude(120.57625);
+
+
+        Location diplomat =  new Location(LocationManager.GPS_PROVIDER);
+        diplomat.setLatitude(16.40376);
+        diplomat.setLongitude(120.58666);
 
         // Getting LocationManager object from System Service LOCATION_SERVICE
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        Location ps1e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps2e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps3e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps4e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps5e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps6e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps7e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps8e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps9e = new Location(LocationManager.GPS_PROVIDER);
+        Location ps10e = new Location(LocationManager.GPS_PROVIDER);
+
+        ps1e.setLatitude(16.41224);
+        ps1e.setLongitude(120.57933);
+
+        ps2e.setLatitude(16.42569);
+        ps2e.setLongitude(120.59344);
+
+        ps3e.setLatitude(16.41664);
+        ps3e.setLongitude(120.61550);
+
+        ps4e.setLatitude(16.37959);
+        ps4e.setLongitude(120.61934);
+
+        ps5e.setLatitude(16.40153);
+        ps5e.setLongitude(120.5932);
+
+        ps6e.setLatitude(16.42382);
+        ps6e.setLongitude(120.60573);
+
+        ps7e.setLatitude(16.41421);
+        ps7e.setLongitude(120.59223);
+
+        ps8e.setLatitude(16.39191);
+        ps8e.setLongitude(120.59997);
+
+        ps9e.setLatitude(16.43007);
+        ps9e.setLongitude(120.54865);
+
+        ps10e.setLatitude(16.38891);
+        ps10e.setLongitude(120.57544);
+
+
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                double distance = location.distanceTo(ps1e) / 1000;
+                double distance2 = location.distanceTo(ps2e) / 1000;
+                double distance3 = location.distanceTo(ps3e) / 1000;
+                double distance4 = location.distanceTo(ps4e) / 1000;
+                double distance5 = location.distanceTo(ps5e) / 1000;
+                double distance6 = location.distanceTo(ps6e) / 1000;
+                double distance7 = location.distanceTo(ps7e) / 1000;
+                double distance8 = location.distanceTo(ps8e) / 1000;
+                double distance9 = location.distanceTo(ps9e) / 1000;
+                double distance10 = location.distanceTo(ps10e) / 1000;
+
+                double dist1 = location.distanceTo(maharlika) / 1000;
+                double dburnham = location.distanceTo(burnham)/1000;
+                double dmines = location.distanceTo(minesview)/1000;
+                double dgrotto = location.distanceTo(grotto)/1000;
+                double dmansion = location.distanceTo(mansion)/1000;
+                double dgovpack = location.distanceTo(govpack)/1000;
+                double dtamawan = location.distanceTo(tamawan)/1000;
+                double dbellchurch = location.distanceTo(bellchurch)/1000;
+                double dbellamph = location.distanceTo(bellamph)/1000;
+                double dcjh = location.distanceTo(campjh)/1000;
+                double dtc = location.distanceTo(teacherscamp)/1000;
+                double dcath = location.distanceTo(cathedral)/1000;
+                double ddiplomat = location.distanceTo(diplomat)/1000;
+                double dbotanical = location.distanceTo(botanical)/1000;
+                double dkennon = location.distanceTo(kennonroad)/1000;
+                double dwright = location.distanceTo(wright)/1000;
+
+
                 mOrigin = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mOrigin,16));
-                    if(mOrigin != null && mDestination != null) {
-                        drawRoute();
-                        int speed = (int) ((location.getSpeed()*3600)/1000);
-                        txtSpeed.setText(speed + " km/h");
-                    }
+
+                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mOrigin, 16));
+
+                if (mOrigin != null && mDestination != null) {
+                    drawRoute();
+                    int speed = (int) ((location.getSpeed() * 3600) / 1000);
+                    txtSpeed.setText(speed + " km/h");
+                    mMap.setTrafficEnabled(true);
+                }
+
+                if (distance <= .5) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 4242697));
+                            startActivity(callintent);
+
+                        }
+                    });
+
+                } else if (distance2 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 6611255));
+                            startActivity(callintent);
+
+                        }
+                    });
+                } else if (distance3 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 3001993));
+                            startActivity(callintent);
+
+                        }
+                    });
+                } else if (distance4 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 3059554));
+                        }
+                    });
+                } else if (distance5 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 4420629));
+                        }
+                    });
+                } else if (distance6 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 3009116));
+                        }
+                    });
+                } else if (distance7 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 6611489));
+                        }
+                    });
+                } else if (distance8 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 4242681));
+                        }
+                    });
+                } else if (distance9 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 4248834));
+                        }
+                    });
+                } else if (distance10 <= 1) {
+                    btnEm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callintent = new Intent(Intent.ACTION_DIAL);
+                            callintent.setData(Uri.parse("tel: " + 4222662));
+                        }
+                    });
+                }
+                if (dist1 <=.5) {
+                    LatLng mh = new LatLng(maharlika.getLatitude(),maharlika.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(mh).title("Maharlika"));
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("The Maharlika Livelihood Center stands" +
+                                    " on the former site of the Baguio Stone Market which was gutted" +
+                                    " by a major fire in 1970 and was demolished in the mid-1970s." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://en.wikipedia.org/wiki/Maharlika_Livelihood_Center"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //bell church
+                }else if (dbellchurch <=.5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("The Bell Church is a magnificent Taoist Church that sits between Baguio City and La Trinidad, Benguet." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://outoftownblog.com/bell-church-of-baguio-city/"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //burnham
+                }else if (dburnham <=.5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Burnham Park is named after Daniel Burnham, an American architect who was the city planner for Baguio. " + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://traveltips.usatoday.com/burnham-park-baguio-16190.html"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //grotto
+                }else if (dgrotto <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Reach the pilgrimage spot Our Lady of Lourdes Grotto by climbing 252 steps to the top of the hill where the grotto sits. " + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://www.inspirock.com/philippines/baguio/our-lady-of-lourdes-grotto-a446228179"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //minesview
+                }else if (dmines <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Mines View is one of the oldest and most famous attraction in the City of Pines. " + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://www.lakadpilipinas.com/2010/02/baguio-mines-view-park.html"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //tamawan
+                }else if (dtamawan <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Located at the outskirts of the city, it is an artists colony set amid a charming collection of Ifugao and Kalinga huts." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://www.gobaguio.com/tam-awan-village.html#.YTGreY5Kjcs"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //mansion
+                }else if (dbellchurch <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("The Bell Church is a magnificent Taoist Church that sits between Baguio City and La Trinidad, Benguet." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://outoftownblog.com/bell-church-of-baguio-city/"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //wright
+                }else if (dwright <=.5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Wright Park is named after its architect Governor Luke E. Wright who ordered architect Daniel Burnham to build the place with recreational facility for American soldiers and civilians." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://thedailyroar.com/asia/philippines/the-wright-park-baguio-city/"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //cathedral 
+                }else if (dcath <=.5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("The site where the cathedral currently stands was a hill referred" +
+                                    " to as \"Kampo\" by the Ibaloi people. In 1907, a Catholic mission " +
+                                    "was established by Belgian missionaries from the Congregatio Immaculati Cordis Mariae," +
+                                    " who named the site Mount Mary." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://www.vigattintourism.com/tourism/articles/Baguio-Cathedral"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //botanical
+                }else if (dbotanical <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("A huge piece of land that is owned by the Philippine government," +
+                                    " Botanical Garden, like Burnham Park is one of those prime pieces of" +
+                                    " real estate that provides priceless peace and tranquility to a city that" +
+                                    " is in danger of becoming an urban jungle." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://www.gobaguio.com/botanical-garden-baguio-city.html#.YTGsMY5Kjcs"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //johnhay
+                }else if (dcjh <=.5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("n 1903 Camp John Hay was designed for the exclusive use of" +
+                                    " the US Military and Department of Defense in the Far East." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://www.gobaguio.com/camp-john-hay.html    "));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //bell amph
+                }else if (dbellamph <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Walking distance from The Manor Hotel and inside the Historic " +
+                                    "core of Camp John Hay is the charming Bell house, the original " +
+                                    "vacation home of the Commanding General of the Philippines. " +
+                                    "It was named after General J. Franklin Bell who's credited for " +
+                                    "transforming Camp John Hay into a major military resort." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://www.backpackingphilippines.com/2009/09/bell-house-camp-john-hay-baguio-history.html?m=0"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                //diplomat
+                }else if (ddiplomat <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("In the 1970s, the wartorn building was converted to the " +
+                                    "sophisticated and beautiful Diplomat Hotel, but the hotel was " +
+                                    "shut down by the ’80s, and left abandoned. The deserted," +
+                                    " deteriorating building became infamous for being one of the " +
+                                    "most haunted ruins in the country." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://www.atlasobscura.com/places/haunted-diplomat-hotel"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //gov pack
+                }else if (dgovpack <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("In the 1970s, the wartorn building was converted to the " +
+                                    "sophisticated and beautiful Diplomat Hotel, but the hotel was " +
+                                    "shut down by the ’80s, and left abandoned. The deserted," +
+                                    " deteriorating building became infamous for being one of the " +
+                                    "most haunted ruins in the country." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("https://baguiocityguide.com/baguio-landmarks-and-their-history/#Governor_Pack_Road"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //teachers camp
+                }else if (dtc <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("Teachers' Camp has, for the past 100 years, served as a training" +
+                                    " center and venue for teachers from all over the Philippines who" +
+                                    " come during the summer break to attend special courses in education." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://www.gobaguio.com/teachers-camp-baguio-city.html#.YTGvgo5Kjcs"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                    //kennon
+                }else if (ddiplomat <= .5) {
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popupwindow, null);
+
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
+
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+                    ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
+                            .setText("The epic of Kennon Road is a part of the story of Baguio.\n" +
+                                    "Without it, Baguio would not have survived." + "\n" +
+                                    "To learn more, click the button below.");
+                    ((Button) popupWindow.getContentView().findViewById(R.id.btnLink)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                            intent.setData(Uri.parse("http://www.gobaguio.com/files/Pages/articles-kennon.html"));
+                            startActivity(intent);
+                        }
+                    });
+                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+                    popupView.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            popupWindow.dismiss();
+                            return true;
+                        }
+                    });
+                }
             }
+
+
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -175,6 +966,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,10000,0,mLocationListener);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
+
                 mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
@@ -187,25 +979,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
 
-
                 });
-
-                btnAccept.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        searchLocation();
-
-                     /*   LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                        View popUp = inflater.inflate(R.layout.popupwindow, null);
-                        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                        boolean focusable = true; // lets taps outside the popup also dismiss it
-                        final PopupWindow popupWindow = new PopupWindow(popUp, width, height, focusable);
-                        popupWindow.showAtLocation(popUp, Gravity.CENTER, 0, 0);drawRoute();*/
-                        }
-
-                });
-
 
             }else{
                 requestPermissions(new String[]{
@@ -214,348 +988,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
-    private void searchLocation() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line,places);
-         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-         et_dest1.setAdapter(adapter);
-         et_dest1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-             @Override
-             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                 mMap.clear();
-                 String location = et_dest1.getSelectedItem().toString();
-                 if (location.equalsIgnoreCase("Burnham Park")) {
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("Burnham Park is named after Daniel Burnham," +
-                                         " an American architect who was the city planner for Baguio." +
-                                         " He designed the park and the original plans for the city simultaneously," +
-                                         " and construction began around 1904.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-                     }
-                 } else if (location.equalsIgnoreCase("Mines View Park")) {
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("Mines View is one of the oldest and most famous attraction" +
-                                         " in the City of Pines. The park got its name from the Benguet" +
-                                         " mountain range where gold, silver and copper were once quarried." +
-                                         " It was a mining area for local diggers before the Americans" +
-                                         " discovered Baguio City.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-
-                     }
-                 } else if (location.equalsIgnoreCase("Baguio Wright Park")) {
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("Wright Park is named after its architect" +
-                                         " Governor Luke E. Wright who ordered architect" +
-                                         " Daniel Burnham to build the place with recreational" +
-                                         " facility for American soldiers and civilians.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-
-                     }
-                 } else if (location.equalsIgnoreCase("Camp John Hay")) {
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("In 1903 Camp John Hay was designed for the exclusive use of the" +
-                                         " US Military and Department of Defense in the Far East. This U.S." +
-                                         " base, named after U.S. President Theodore Roosevelt's Secretary of" +
-                                         " State, was used by the Japanese as a concentration camp for American" +
-                                         " and British soldiers during WWII.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-
-                     }
-                 } else if (location.equalsIgnoreCase("Baguio The Mansion House")) {
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("Formerly called the Mansion House," +
-                                         " this stately building was built in 1908" +
-                                         " as summer homes for U.S. Governor-generals " +
-                                         "who were the American administrators for " +
-                                         "the Philippines and was destroyed in 1945" +
-                                         " during the battle for the liberation of the " +
-                                         "Philippines.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-                     }
-                 } else if (location.equalsIgnoreCase("Bell Church")) {
-
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("The Bell Church (Chinese: 钟零善坛) is a Chinese temple of" +
-                                         " the Chinese Filipino indigenous religious organization of " +
-                                         "the same name in La Trinidad, Benguet, Philippines.\n" +
-                                         "\n" +
-                                         "It is an important religious and cultural site for the" +
-                                         " local Chinese Filipino community and one of the tourist sites" +
-                                         " of both La Trinidad and the neighboring city of Baguio featuring" +
-                                         " in local films in the 1970s until the 1990s.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-                     }
-                 } else if (location.equalsIgnoreCase("Baguio Bamboo Sanctuary")) {
-
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("The Bamboo Eco Park in Baguio is quickly becoming " +
-                                         "a popular tourist destination in the City of Pines.");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-                     }
-                 }else if (location.equalsIgnoreCase("Baguio Our Lady of Lourdes Grotto")) {
-
-                     if (location != null || !location.equalsIgnoreCase("")) {
-                         List<Address> addressList = null;
-                         Geocoder geocoder = new Geocoder(MapsActivity.this);
-                         try {
-                             addressList = geocoder.getFromLocationName(location, 1);
-                         } catch (IOException e) {
-                             e.printStackTrace();
-                         }
-
-                         Address address = addressList.get(0);
-                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                         DownloadTask downloadTask = new DownloadTask();
-                         downloadTask.execute(getDirectionsUrl(mOrigin, latLng));
-                         mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                         View popupView = inflater.inflate(R.layout.popupwindow, null);
-
-                         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                         final PopupWindow popupWindow = new PopupWindow(popupView, width, height);
-                         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                         ((TextView) popupWindow.getContentView().findViewById(R.id.txtPopup))
-                                 .setText("This is a Catholic shrine and pilgrimage site assigned" +
-                                         " to Our Lady of Lourdes Grotto, located on Dominican Hill" +
-                                         " Road Baguio, Philippines. The site also features a statue" +
-                                         " of Virgin Mary and close by is another statue of Jesus Christ." +
-                                         " The shrine is reached after climbing 250 steps beautifully " +
-                                         "laid down in natural settings");
-                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                         popupView.setOnTouchListener(new View.OnTouchListener() {
-                             @Override
-                             public boolean onTouch(View v, MotionEvent event) {
-                                 popupWindow.dismiss();
-                                 return true;
-                             }
-                         });
-                     }
-                 }
-             }
-
-
-             @Override
-             public void onNothingSelected(AdapterView<?> parent) {
-
-             }
-         });
-
-    }
-
 
     private void drawRoute(){
 
@@ -570,18 +1002,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private String getDirectionsUrl(LatLng origin,LatLng dest){
-
         // Origin of route
         String str_origin = "origin="+origin.latitude+","+origin.longitude;
 
         // Destination of route
         String str_dest = "destination="+dest.latitude+","+dest.longitude;
 
-        // Key
-        String key = "key= AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U";
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Travelling Mode
+        String mode = "mode=driving";
+
+        if(rbDriving.isChecked()){
+            mode = "mode=driving";
+            mMode = 0 ;
+        }else if(rbBicycling.isChecked()){
+            mode = "mode=transit";
+            mMode = 1;
+        }else if(rbWalking.isChecked()){
+            mode = "mode=walking";
+            mMode = 2;
+        }
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+key;
+        String parameters = str_origin+"&"+str_dest+"&"+sensor+"&"+mode+"&"+key;
 
         // Output format
         String output = "json";
@@ -591,6 +1036,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return url;
     }
+
 
     /** A method to download json data from url */
     private String downloadUrl(String strUrl) throws IOException {
@@ -689,7 +1135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points =  null;
+            ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
             String distance = "";
             String duration = "";
@@ -720,11 +1166,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(8);
-                lineOptions.color(Color.RED);
+                lineOptions.width(16);
+                if(mMode==MODE_DRIVING){
+                    lineOptions.color(Color.RED);
+                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                }else if(mMode==MODE_TRANSIT){
+                    lineOptions.color(Color.GREEN);
+                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                }else if (mMode==MODE_WALKING){
+                    lineOptions.color(Color.BLUE);
+                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                }
             }
-                txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
-
             // Drawing polyline in the Google Map for the i-th route
             if(lineOptions != null) {
                 if(mPolyline != null){
@@ -735,11 +1188,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }else
                 Toast.makeText(getApplicationContext(),"No route is found", Toast.LENGTH_LONG).show();
         }
-
-
     }
 
- }
 
-
-
+}

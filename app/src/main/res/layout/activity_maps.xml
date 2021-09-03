@@ -5,40 +5,15 @@
     android:layout_height="match_parent" android:layout_width="match_parent">
 
 
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginTop="12dp"
-        android:text="Destination"
-        map:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <Spinner
-        android:entries="@array/places"
-        android:id="@+id/et_dest"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        map:layout_constraintTop_toBottomOf="@+id/textView18"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <Button
-        android:id="@+id/btnAccept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Accept"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintTop_toBottomOf="@+id/et_dest" />
-
     <fragment
-
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="500dp"
-        map:layout_constraintTop_toBottomOf="@+id/btnAccept"
+        android:layout_marginTop="4dp"
+        map:layout_constraintTop_toTopOf="parent"
         tools:context=".MapsActivity"
-        tools:layout_editor_absoluteX="-51dp" />
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/txtSpeed"
@@ -61,15 +36,7 @@
         android:textSize="24dp"
         map:layout_constraintStart_toEndOf="@+id/txtSpeed"
         map:layout_constraintTop_toBottomOf="@+id/map" />
-    <!-- <androidx.core.widget.NestedScrollView
-         android:id="@+id/bottom_sheet"
-         android:layout_width="match_parent"
-         android:layout_height="350dp"
-         android:layout_marginTop="376dp"
-         map:layout_constraintTop_toTopOf="parent"
-         tools:layout_editor_absoluteX="16dp" />
 
- -->
     <ImageButton
         android:id="@+id/btnEm"
         android:src="@mipmap/phone_icon_fg"
@@ -79,4 +46,35 @@
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/map" />
 
+
+    <RadioGroup
+        android:id="@+id/rg_modes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/txtDuration">
+
+        <RadioButton
+            android:id="@+id/rb_driving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Driving" />
+
+        <RadioButton
+            android:id="@+id/rb_bicycling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transit" />
+
+        <RadioButton
+            android:id="@+id/rb_walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Walking" />
+
+    </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
