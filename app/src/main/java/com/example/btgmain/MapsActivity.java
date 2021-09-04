@@ -23,12 +23,13 @@
  import android.widget.PopupWindow;
  import android.widget.RadioButton;
  import android.widget.RadioGroup;
- import android.widget.Spinner;
  import android.widget.TextView;
  import android.widget.Toast;
 
+ import androidx.annotation.NonNull;
  import androidx.fragment.app.FragmentActivity;
 
+ import com.google.android.gms.common.api.Status;
  import com.google.android.gms.maps.GoogleMap;
  import com.google.android.gms.maps.OnMapReadyCallback;
  import com.google.android.gms.maps.SupportMapFragment;
@@ -40,7 +41,14 @@
  import com.google.android.gms.maps.model.PatternItem;
  import com.google.android.gms.maps.model.Polyline;
  import com.google.android.gms.maps.model.PolylineOptions;
+ import com.google.android.libraries.places.api.Places;
+ import com.google.android.libraries.places.api.model.Place;
+ import com.google.android.libraries.places.api.model.RectangularBounds;
+ import com.google.android.libraries.places.api.model.TypeFilter;
+ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+ import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+ import org.jetbrains.annotations.NotNull;
  import org.json.JSONObject;
 
  import java.io.BufferedReader;
@@ -55,9 +63,8 @@
  import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback  {
-    TextView txtSpeed, txtPopUp,txtDuration,txtWalkDuration;
-    Spinner et_dest1;
-    Button btnLink,btnDrive,btnWalk,btnTransit,btnBike;
+    TextView txtSpeed, txtPopUp,txtDuration;
+    Button btnLink;
     ImageButton btnEm;
     RadioButton rbDriving, rbWalking, rbBicycling;
     RadioGroup rgModes;
@@ -66,7 +73,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final int MODE_TRANSIT=1;
     final int MODE_WALKING=2;
 
-
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -74,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
-    public  String key = "key= AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U";
+    public  String key = "key=AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +102,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          rbBicycling = findViewById(R.id.rb_bicycling);
          rbWalking = findViewById(R.id.rb_walking);
          rgModes = findViewById(R.id.rg_modes);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(),"AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U");
+        }
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+
+        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
+                new LatLng(16.4023,120.5960),
+                 new LatLng(16.5577,120.8039)));
+
+         autocompleteFragment.setCountries("Ph");
+
+         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull @NotNull Place place) {
+                mDestination = place.getLatLng();
+                drawRoute();
+            }
+
+            @Override
+            public void onError(@NonNull @NotNull Status status) {
+                Toast.makeText(MapsActivity.this,"Place not Found",Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -288,7 +320,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     drawRoute();
                     int speed = (int) ((location.getSpeed() * 3600) / 1000);
                     txtSpeed.setText(speed + " km/h");
-                    mMap.setTrafficEnabled(true);
+                    //mMap.setTrafficEnabled(true);
                 }
 
                 if (distance <= .5) {
@@ -1130,7 +1162,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             List<PatternItem> pattern = Arrays.asList(
-                    new Dot(), new Gap(20), new Dash(30), new Gap(20));
+                    new Dot(), new Gap(20), new Dot(), new Gap(20));
+            List<PatternItem> pattern2 = Arrays.asList(
+                    new Dash(20),new Gap(20),new Dash(20 ),new Gap(20));
             ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
             String distance = "";
@@ -1164,16 +1198,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(mMode==MODE_DRIVING){
                     lineOptions.addAll(points);
                     lineOptions.color(Color.RED);
-                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                    txtDuration.setText("Distance:"+ distance + ", Duration:"+duration);
                 }else if(mMode==MODE_TRANSIT){
                     lineOptions.addAll(points);
+                    lineOptions.pattern(pattern2);
                     lineOptions.color(Color.GREEN);
-                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                    txtDuration.setText("Distance:"+ distance + ", Duration:"+duration);
                 }else if (mMode==MODE_WALKING){
                     lineOptions.addAll(points);
                     lineOptions.pattern(pattern);
                     lineOptions.color(Color.BLUE);
-                    txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                    txtDuration.setText("Distance:"+ distance + ", Duration:"+duration);
                 }
             }
             // Drawing polyline in the Google Map for the i-th route
