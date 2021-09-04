@@ -5,8 +5,6 @@
  import android.content.pm.PackageManager;
  import android.graphics.Color;
  import android.graphics.drawable.ColorDrawable;
- import android.location.Address;
- import android.location.Geocoder;
  import android.location.Location;
  import android.location.LocationListener;
  import android.location.LocationManager;
@@ -14,15 +12,11 @@
  import android.os.AsyncTask;
  import android.os.Build;
  import android.os.Bundle;
- import android.text.Html;
  import android.util.Log;
  import android.view.Gravity;
  import android.view.LayoutInflater;
  import android.view.MotionEvent;
  import android.view.View;
- import android.webkit.JavascriptInterface;
- import android.widget.AdapterView;
- import android.widget.ArrayAdapter;
  import android.widget.Button;
  import android.widget.ImageButton;
  import android.widget.LinearLayout;
@@ -33,21 +27,20 @@
  import android.widget.TextView;
  import android.widget.Toast;
 
- import androidx.annotation.NonNull;
  import androidx.fragment.app.FragmentActivity;
 
- import com.google.android.gms.location.GeofencingApi;
- import com.google.android.gms.maps.CameraUpdateFactory;
  import com.google.android.gms.maps.GoogleMap;
  import com.google.android.gms.maps.OnMapReadyCallback;
  import com.google.android.gms.maps.SupportMapFragment;
+ import com.google.android.gms.maps.model.Dash;
+ import com.google.android.gms.maps.model.Dot;
+ import com.google.android.gms.maps.model.Gap;
  import com.google.android.gms.maps.model.LatLng;
- import com.google.android.gms.maps.model.Marker;
  import com.google.android.gms.maps.model.MarkerOptions;
+ import com.google.android.gms.maps.model.PatternItem;
  import com.google.android.gms.maps.model.Polyline;
  import com.google.android.gms.maps.model.PolylineOptions;
 
- import org.jetbrains.annotations.NotNull;
  import org.json.JSONObject;
 
  import java.io.BufferedReader;
@@ -57,6 +50,7 @@
  import java.net.HttpURLConnection;
  import java.net.URL;
  import java.util.ArrayList;
+ import java.util.Arrays;
  import java.util.HashMap;
  import java.util.List;
 
@@ -1135,6 +1129,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            List<PatternItem> pattern = Arrays.asList(
+                    new Dot(), new Gap(20), new Dash(30), new Gap(20));
             ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
             String distance = "";
@@ -1163,17 +1159,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     points.add(position);
                 }
-
+                    lineOptions.width(10);
                 // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(16);
                 if(mMode==MODE_DRIVING){
+                    lineOptions.addAll(points);
                     lineOptions.color(Color.RED);
                     txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
                 }else if(mMode==MODE_TRANSIT){
+                    lineOptions.addAll(points);
                     lineOptions.color(Color.GREEN);
                     txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
                 }else if (mMode==MODE_WALKING){
+                    lineOptions.addAll(points);
+                    lineOptions.pattern(pattern);
                     lineOptions.color(Color.BLUE);
                     txtDuration.setText("Distance:"+distance + ", Duration:"+duration);
                 }

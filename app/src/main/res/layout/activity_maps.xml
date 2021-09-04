@@ -61,8 +61,8 @@
             android:id="@+id/rb_driving"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Driving" />
+            android:text="Driving"
+            android:checked="true"/>
 
         <RadioButton
             android:id="@+id/rb_bicycling"
@@ -74,7 +74,7 @@
             android:id="@+id/rb_walking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Walking" />
+            android:text="Walking"/>
 
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
