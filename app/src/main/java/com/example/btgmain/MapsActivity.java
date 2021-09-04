@@ -111,7 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
 
         autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
-                new LatLng(16.4023,120.5960),
+                 new LatLng(16.4023,120.5960),
                  new LatLng(16.5577,120.8039)));
 
          autocompleteFragment.setCountries("Ph");
@@ -283,6 +283,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+
                 double distance = location.distanceTo(ps1e) / 1000;
                 double distance2 = location.distanceTo(ps2e) / 1000;
                 double distance3 = location.distanceTo(ps3e) / 1000;
@@ -293,6 +294,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 double distance8 = location.distanceTo(ps8e) / 1000;
                 double distance9 = location.distanceTo(ps9e) / 1000;
                 double distance10 = location.distanceTo(ps10e) / 1000;
+
 
                 double dist1 = location.distanceTo(maharlika) / 1000;
                 double dburnham = location.distanceTo(burnham)/1000;
@@ -320,17 +322,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     drawRoute();
                     int speed = (int) ((location.getSpeed() * 3600) / 1000);
                     txtSpeed.setText(speed + " km/h");
-                    //mMap.setTrafficEnabled(true);
                 }
 
-                if (distance <= .5) {
+                if (distance <= 1) {
                     btnEm.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 4242697));
                             startActivity(callintent);
-
                         }
                     });
 
@@ -344,6 +344,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
                     });
+
                 } else if (distance3 <= 1) {
                     btnEm.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -360,6 +361,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 3059554));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance5 <= 1) {
@@ -368,6 +370,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 4420629));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance6 <= 1) {
@@ -376,6 +379,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 3009116));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance7 <= 1) {
@@ -384,6 +388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 6611489));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance8 <= 1) {
@@ -392,6 +397,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 4242681));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance9 <= 1) {
@@ -400,6 +406,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 4248834));
+                            startActivity(callintent);
                         }
                     });
                 } else if (distance10 <= 1) {
@@ -408,12 +415,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View v) {
                             Intent callintent = new Intent(Intent.ACTION_DIAL);
                             callintent.setData(Uri.parse("tel: " + 4222662));
+                            startActivity(callintent);
                         }
                     });
                 }
                 if (dist1 <=.5) {
-                    LatLng mh = new LatLng(maharlika.getLatitude(),maharlika.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(mh).title("Maharlika"));
                     LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                     View popupView = inflater.inflate(R.layout.popupwindow, null);
 
