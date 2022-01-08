@@ -48,7 +48,6 @@
  import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
  import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
- import org.jetbrains.annotations.NotNull;
  import org.json.JSONObject;
 
  import java.io.BufferedReader;
@@ -80,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mOrigin;
     private LatLng mDestination;
     private Polyline mPolyline;
-    public  String key = "key=AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U";
+    public  String key = "key=AIzaSyBDBvyJXdoHF2X4154ucAJ2bFyeLYn786o";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          rgModes = findViewById(R.id.rg_modes);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(),"AIzaSyCR0VdvbweGw1Q4TujqlGlqLAhcnG_Sh1U");
+            Places.initialize(getApplicationContext(),"AIzaSyBDBvyJXdoHF2X4154ucAJ2bFyeLYn786o");
         }
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -114,17 +113,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                  new LatLng(16.4023,120.5960),
                  new LatLng(16.5577,120.8039)));
 
-         autocompleteFragment.setCountries("Ph");
+         autocompleteFragment.setCountries("PH");
 
          autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onPlaceSelected(@NonNull @NotNull Place place) {
+            public void onPlaceSelected(@NonNull Place place) {
                 mDestination = place.getLatLng();
                 drawRoute();
             }
 
             @Override
-            public void onError(@NonNull @NotNull Status status) {
+            public void onError(@NonNull Status status) {
                 Toast.makeText(MapsActivity.this,"Place not Found",Toast.LENGTH_SHORT).show();
             }
         });
@@ -136,11 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.isMyLocationEnabled();
         getMyLocation();
-
-
-
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
